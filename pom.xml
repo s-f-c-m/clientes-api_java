@@ -11,7 +11,7 @@
 	<groupId>co.edu.unbosque</groupId>
 	<artifactId>clientes</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>war</packaging>
+	<packaging>jar</packaging>
 	<name>clientes</name>
 	<description>api clientes</description>
 	<properties>
