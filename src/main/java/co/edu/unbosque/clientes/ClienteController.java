@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -13,35 +14,50 @@ import java.util.Optional;
 public class ClienteController {
 
     private ClienteService clienteService;
+    private final JWTChecker jwtchecker;
 
     @PostMapping
-    public void insertCliente(@RequestBody Cliente cliente){
-        clienteService.insertCliente(cliente);
+    public void insertCliente(@RequestHeader Map<String, String> headers, @RequestBody Cliente cliente){
+        if(jwtchecker.doFilter(headers)){
+            clienteService.insertCliente(cliente);
+        }
     }
 
     @GetMapping
-    public List<Cliente> getClientes(){
-        return clienteService.getClientes();
+    public List<Cliente> getClientes(@RequestHeader Map<String, String> headers){
+        if(jwtchecker.doFilter(headers)){
+            return clienteService.getClientes();
+        }
+        return null;
     }
 
     @GetMapping("/{id}")
-    public Optional<Cliente> getCliente(@PathVariable int id){
-        return clienteService.getCliente(id);
+    public Optional<Cliente> getCliente(@RequestHeader Map<String, String> headers, @PathVariable int id){
+        if(jwtchecker.doFilter(headers)){
+            return clienteService.getCliente(id);
+        }
+        return null;
     }
 
     @DeleteMapping("/{id}")
-    public String deleteCliente(@PathVariable int id){
-        if(clienteService.deleteCliente(id)){
-            return ("{'code':'200','message': 'Registro eliminado'}");
+    public String deleteCliente(@RequestHeader Map<String, String> headers, @PathVariable int id){
+        if(jwtchecker.doFilter(headers)){
+            if(clienteService.deleteCliente(id)){
+                return ("{'code':'200','message': 'Registro eliminado'}");
+            }
+            return ("{'code': '404','message': 'Registro no encontrad'}");
         }
-        return ("{'code': '404','message': 'Registro no encontrad'}");
+        return null;
     }
 
     @PutMapping("/{id}")
-    public String updateCliente(@PathVariable int id, @RequestBody Cliente cliente){
-        if(clienteService.updateCliente(id, cliente)){
-            return ("{'code':'200','message': 'Registro actualiazado'}");
+    public String updateCliente(@RequestHeader Map<String, String> headers, @PathVariable int id, @RequestBody Cliente cliente){
+        if(jwtchecker.doFilter(headers)){
+            if(clienteService.updateCliente(id, cliente)){
+                return ("{'code':'200','message': 'Registro actualiazado'}");
+            }
+            return ("{'code': '404','message': 'Registro no encontrad'}");
         }
-        return ("{'code': '404','message': 'Registro no encontrad'}");
+        return null;
     }
 }
